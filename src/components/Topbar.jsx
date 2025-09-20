@@ -15,7 +15,7 @@ export default function Topbar({ onUploadClick, onNewFolderClick }) {
           {/* The onClick handlers are now connected */}
           <button 
             onClick={onUploadClick}
-            className="inline-flex items-center gap-2 rounded-2xl px-3 py-2 bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-sm font-medium shadow"
+            className="inline-flex items-center gap-2  rounded-2xl px-3 py-2 bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-sm font-medium shadow"
           >
             <Upload className="h-4 w-4" /> Upload
           </button>

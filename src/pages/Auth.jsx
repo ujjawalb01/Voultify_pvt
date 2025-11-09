@@ -119,7 +119,7 @@ const LoginSignUpForm = ({ onLogin }) => {
                         <form onSubmit={handleSignUpSubmit}>
                             <h1>Sign Up</h1>
                             <div className="social-container">
-                                <a href="#" className="social"><img src="/google.png" alt="Google" width="24" /></a>
+                                {/* <a href="#" className="social"><img src="/google.png" alt="Google" width="24" /></a> */}
                             </div>
                             <span>or use your email for registration</span>
                             <input type="text" placeholder="Name" value={signUpName} onChange={(e) => setSignUpName(e.target.value)} required />
@@ -133,7 +133,7 @@ const LoginSignUpForm = ({ onLogin }) => {
                         <form onSubmit={handleSignInSubmit}>
                             <h1>Sign In</h1>
                             <div className="social-container">
-                                <a href="#" className="social"><img src="/google.png" alt="Google" width="24" /></a>
+                                {/* <a href="#" className="social"><img src="/google.png" alt="Google" width="24" /></a> */}
                             </div>
                             <span>or use your email for login</span>
                             <input type="email" placeholder="Email" value={signInEmail} onChange={(e) => setSignInEmail(e.target.value)} required />
@@ -166,3 +166,10 @@ const LoginSignUpForm = ({ onLogin }) => {
 export default function Auth({ onLogin }) {
   return <LoginSignUpForm onLogin={onLogin} />;
 }
+
+
+
+
+
+
+

@@ -22,5 +22,10 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.1",
     "vite": "^5.0.0"
-  }
+  },
+  "description": "This is a starter frontend scaffold for **Voultify** (a Google Drive-like app) with a dark violet branding.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

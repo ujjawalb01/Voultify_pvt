@@ -31,7 +31,7 @@ const LoginSignUpForm = ({ onLogin }) => {
         e.preventDefault();
         setSignUpError(''); // Reset sign-up error
         try {
-            const response = await fetch('https://mwnwp6z7-3000.inc1.devtunnels.ms/api/user/register', {
+            const response = await fetch('https://localhost:3000/api/user/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: signUpName, email: signUpEmail, password: signUpPassword }),
@@ -56,12 +56,13 @@ const LoginSignUpForm = ({ onLogin }) => {
         e.preventDefault();
         setLoginError('');
         try {
-            const response = await fetch('https://mwnwp6z7-3000.inc1.devtunnels.ms/api/user/login', {
+            const response = await fetch('http://localhost:3000/api/user/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: signInEmail, password: signInPassword }),
             });
             const data = await response.json();
+            console.log(data)
 
             if (!response.ok) {
                 throw new Error(data.msg || 'Failed to sign in');

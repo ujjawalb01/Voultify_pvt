@@ -40,10 +40,9 @@ export function UploadModal({ onClose }) {
     selectedFiles.forEach(file => {
       formData.append('file', file); // 'files' should match your backend's expected field name
     });
-
     try {
       // IMPORTANT: Replace with your actual file upload endpoint
-      const response = await fetch('https://mwnwp6z7-3000.inc1.devtunnels.ms/api/file/upload', {
+      const response = await fetch('http://localhost:3000/api/file/upload', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,

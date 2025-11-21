@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
       if (token) {
         try {
           // IMPORTANT: Replace with your actual user profile endpoint
-          const response = await fetch('https://mwnwp6z7-3000.inc1.devtunnels.ms/api/user/profile',
+          const response = await fetch('http://localhost:3000/api/user/profile',
              {
             headers: { 'Authorization': `Bearer ${token}` }
           });

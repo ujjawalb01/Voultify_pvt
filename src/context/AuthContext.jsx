@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
              {
             headers: { 'Authorization': `Bearer ${token}` }
           });
-console.log(response);
+
 
           if (!response.ok) {
             // This handles cases where the token is expired or invalid

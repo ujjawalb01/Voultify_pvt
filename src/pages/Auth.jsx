@@ -31,7 +31,7 @@ const LoginSignUpForm = ({ onLogin }) => {
         e.preventDefault();
         setSignUpError(''); // Reset sign-up error
         try {
-            const response = await fetch('https://localhost:3000/api/user/register', {
+            const response = await fetch('http://localhost:3000/api/user/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: signUpName, email: signUpEmail, password: signUpPassword }),
@@ -42,7 +42,7 @@ const LoginSignUpForm = ({ onLogin }) => {
                 throw new Error(data.msg || 'Failed to sign up');
             }
 
-            console.log('Sign up successful:', data.msg);
+
             setSignInEmail(signUpEmail); // Pre-fill email in the sign-in form
             setIsRightPanelActive(false); // Switch to sign-in panel
 
@@ -62,7 +62,7 @@ const LoginSignUpForm = ({ onLogin }) => {
                 body: JSON.stringify({ email: signInEmail, password: signInPassword }),
             });
             const data = await response.json();
-            console.log(data)
+
 
             if (!response.ok) {
                 throw new Error(data.msg || 'Failed to sign in');

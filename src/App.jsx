@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import MyFiles from './pages/MyFiles';
+import Folders from './pages/Folders';
 import Trash from './pages/Trash';
 import Profile from './pages/Profile';
 
@@ -36,6 +37,8 @@ export default function App() {
       >
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="my-files" element={<MyFiles />} />
+        <Route path="folders" element={<Folders />} />
+        <Route path="folders/:folderId" element={<MyFiles />} />
         <Route path="trash" element={<Trash />} />
         <Route path="profile" element={<Profile />} />
         {/* Redirect from base path to dashboard */}
@@ -61,7 +64,7 @@ export default function App() {
 
 //   const handleCreateFolder = (folderName) => {
 //     // In the future, this will add a new folder to our file list.
-//     console.log('Creating new folder:', folderName);
+
 //     setActiveModal(null); // Close the modal after creation
 //   };
 

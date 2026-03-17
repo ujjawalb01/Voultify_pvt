@@ -4,10 +4,12 @@ import FileCard from '../components/FileCard';
 import { useAuth } from '../context/AuthContext';
 import { FolderPlus } from 'lucide-react';
 import { NewFolderModal } from '../components/Modals';
+import FilePreviewModal from '../components/FilePreviewModal';
 
 export default function Folders() {
   const [folders, setFolders] = useState([]);
   const [showFolderModal, setShowFolderModal] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -100,8 +102,8 @@ export default function Folders() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Folders</h2>
-          <button onClick={() => setShowFolderModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition">
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-white">Folders</h2>
+          <button onClick={() => setShowFolderModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-white/5 border border-zinc-200 dark:border-transparent hover:bg-zinc-50 dark:hover:bg-white/10 text-zinc-900 dark:text-white transition shadow-sm dark:shadow-none">
             <FolderPlus className="h-4 w-4" />
             <span>New Folder</span>
           </button>
@@ -109,8 +111,8 @@ export default function Folders() {
 
       {folders.length === 0 ? (
         <div className="text-center py-10 text-zinc-500">
-             <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
-                  <FolderPlus className="h-8 w-8 opacity-50" />
+             <div className="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
+                  <FolderPlus className="h-8 w-8 opacity-50 text-zinc-400 dark:text-white" />
               </div>
             No folders found. Create one to get started.
         </div>
@@ -123,6 +125,7 @@ export default function Folders() {
                 onDelete={handleDelete} 
                 onFolderClick={handleFolderClick}
                 onShare={() => alert('Cannot share folder link yet')}
+                onPreview={setPreviewFile}
              />
           ))}
         </div>
@@ -133,6 +136,12 @@ export default function Folders() {
             onClose={() => setShowFolderModal(false)} 
             onCreate={handleCreateFolder} 
             currentFolderId={null}
+        />
+      )}
+      {previewFile && (
+        <FilePreviewModal
+            file={previewFile}
+            onClose={() => setPreviewFile(null)}
         />
       )}
     </div>

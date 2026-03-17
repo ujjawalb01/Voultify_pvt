@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",
+    "crypto-js": "^4.2.0",
     "firebase": "^12.1.0",
     "framer-motion": "^10.12.16",
     "lucide-react": "^0.271.0",

@@ -244,6 +244,89 @@ const moveFile = async (req, res) => {
   }
 };
 
+// @desc    Bulk move files/folders
+// @route   POST /api/file/bulk/move
+// @access  Private
+const bulkMoveFiles = async (req, res) => {
+  try {
+    const { fileIds, folderId } = req.body;
+    if (!fileIds || !Array.isArray(fileIds)) return res.status(400).json({msg: 'Invalid request'});
+
+    await File.updateMany(
+      { _id: { $in: fileIds }, user: req.user._id, isTrashed: false },
+      { $set: { folderId: folderId || null } }
+    );
+
+    res.json({ msg: 'Files moved successfully' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+// @desc    Bulk soft delete (Move to Trash)
+// @route   POST /api/file/bulk/delete
+// @access  Private
+const bulkDeleteFiles = async (req, res) => {
+  try {
+    const { fileIds } = req.body;
+    if (!fileIds || !Array.isArray(fileIds)) return res.status(400).json({msg: 'Invalid request'});
+
+    await File.updateMany(
+      { _id: { $in: fileIds }, user: req.user._id },
+      { $set: { isTrashed: true } }
+    );
+
+    res.json({ msg: 'Files moved to trash' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+// @desc    Bulk restore files from Trash
+// @route   POST /api/file/bulk/restore
+// @access  Private
+const bulkRestoreFiles = async (req, res) => {
+  try {
+    const { fileIds } = req.body;
+    if (!fileIds || !Array.isArray(fileIds)) return res.status(400).json({msg: 'Invalid request'});
+
+    await File.updateMany(
+      { _id: { $in: fileIds }, user: req.user._id },
+      { $set: { isTrashed: false } }
+    );
+
+    res.json({ msg: 'Files restored' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+// @desc    Bulk permanently delete files
+// @route   POST /api/file/bulk/permanent
+// @access  Private
+const bulkPermanentDeleteFiles = async (req, res) => {
+  try {
+    const { fileIds } = req.body;
+    if (!fileIds || !Array.isArray(fileIds)) return res.status(400).json({msg: 'Invalid request'});
+
+    const files = await File.find({ _id: { $in: fileIds }, user: req.user._id });
+
+    for (const file of files) {
+      if (file.url && file.type !== 'folder') {
+        const filePath = path.join(__dirname, '../../', file.url);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    }
+
+    await File.deleteMany({ _id: { $in: fileIds }, user: req.user._id });
+    res.json({ msg: 'Files permanently deleted' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
 module.exports = {
   getFiles,
   uploadFile,
@@ -252,5 +335,9 @@ module.exports = {
   getTrashFiles,
   restoreFile,
   permanentDeleteFile,
-  moveFile
+  moveFile,
+  bulkDeleteFiles,
+  bulkMoveFiles,
+  bulkRestoreFiles,
+  bulkPermanentDeleteFiles
 };

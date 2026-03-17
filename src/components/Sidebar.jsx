@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Folder, Share2, Trash2, User, LogOut, ChevronRight, Grid, FolderPlus, X } from 'lucide-react';
+import { LayoutDashboard, Folder, Share2, Trash2, User, LogOut, ChevronRight, Grid, FolderPlus, X, Settings as SettingsIcon } from 'lucide-react';
 import logo from '../assets/logo.jpg';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,8 +10,8 @@ function NavItem({ to, label, icon, onClick }) {
       to={to}
       onClick={onClick}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-white/5 transition ${
-          isActive ? 'bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white' : 'text-zinc-200'
+        `flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 transition ${
+          isActive ? 'bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white' : 'text-zinc-600 dark:text-zinc-200'
         }`
       }
     >
@@ -22,12 +22,12 @@ function NavItem({ to, label, icon, onClick }) {
 }
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   return (
     <aside 
       className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-[#0f0920] border-r border-white/5 flex flex-col transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-[#0f0920] border-r border-zinc-200 dark:border-white/5 flex flex-col transition-transform duration-300 ease-in-out
         lg:translate-x-0 lg:static lg:z-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}
@@ -40,7 +40,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="text-xs opacity-70">Cloud Storage</div>
             </div>
         </div>
-        <button onClick={onClose} className="lg:hidden p-2 text-zinc-400 hover:text-white">
+        <button onClick={onClose} className="lg:hidden p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
             <X className="h-6 w-6" />
         </button>
       </div>
@@ -51,13 +51,28 @@ export default function Sidebar({ isOpen, onClose }) {
         <NavItem to="/folders" label="Folders" icon={<FolderPlus className="h-4 w-4" />} onClick={onClose} />
         <NavItem to="/trash" label="Trash" icon={<Trash2 className="h-4 w-4" />} onClick={onClose} />
         <NavItem to="/profile" label="Profile" icon={<User className="h-4 w-4" />} onClick={onClose} />
+        <NavItem to="/settings" label="Settings" icon={<SettingsIcon className="h-4 w-4" />} onClick={onClose} />
       </nav>
 
-      <div className="mt-auto p-3 rounded-xl bg-white/3">
-        <div className="text-xs opacity-80">Storage</div>
+      <div className="mt-auto p-3 rounded-xl bg-zinc-100 dark:bg-white/5">
+        <div className="text-xs text-zinc-500 dark:opacity-80">Storage</div>
         <div className="mt-2 text-sm font-medium">2.5 GB of 15 GB</div>
-        <div className="mt-2 h-2 w-full rounded-full bg-white/10">
+        <div className="mt-2 h-2 w-full rounded-full bg-zinc-200 dark:bg-white/10 mb-4">
           <div className="h-2 rounded-full" style={{ width: '17%', backgroundImage: 'linear-gradient(90deg,#6A11CB,#2575FC)'}} />
+        </div>
+        
+        <div className="flex items-center gap-3 pt-3 border-t border-zinc-200 dark:border-white/10">
+            {token && user?.avatarUrl ? (
+                <img src={`http://localhost:3000${user.avatarUrl}`} alt="Profile" className="h-8 w-8 rounded-full object-cover" />
+            ) : (
+                <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-white/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                </div>
+            )}
+            <div className="flex flex-col min-w-0 flex-1">
+                <span className="text-sm font-medium text-zinc-900 dark:text-white truncate">{user?.name || 'User'}</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{user?.email || 'email@example.com'}</span>
+            </div>
         </div>
       </div>
     </aside>

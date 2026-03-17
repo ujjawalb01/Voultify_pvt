@@ -23,9 +23,13 @@ app.use((req, res, next) => {
 app.use('/api/user', userRoutes);
 app.use('/api/file', fileRoutes); // Changed to singular to match frontend: /api/file/upload
 
-// Make uploads folder static
+// Make uploads folder static and force inline disposition so browsers preview instead of download
 const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
+    setHeaders: (res, path, stat) => {
+        res.set('Content-Disposition', 'inline');
+    }
+}));
 
 app.get('/', (req, res) => {
   res.send('API is running...');

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FileCard from '../components/FileCard';
 import { useAuth } from '../context/AuthContext';
+import FilePreviewModal from '../components/FilePreviewModal';
 
 export default function Dashboard() {
   const [files, setFiles] = useState([]);
+  const [previewFile, setPreviewFile] = useState(null);
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -80,9 +82,9 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Overview (Recent Files)</h2>
+      <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">Overview (Recent Files)</h2>
       {files.length === 0 ? (
-        <div className="text-white/50 text-sm">No files uploaded yet. Start by clicking "Upload".</div>
+        <div className="text-zinc-500 dark:text-white/50 text-sm">No files uploaded yet. Start by clicking "Upload".</div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {files.map((f) => (
@@ -92,9 +94,16 @@ export default function Dashboard() {
                 onDelete={handleDelete} 
                 onShare={handleShare} 
                 onFolderClick={handleFolderClick}
+                onPreview={setPreviewFile}
              />
           ))}
         </div>
+      )}
+      {previewFile && (
+        <FilePreviewModal
+            file={previewFile}
+            onClose={() => setPreviewFile(null)}
+        />
       )}
     </div>
   );

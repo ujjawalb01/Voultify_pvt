@@ -10,6 +10,7 @@ import MyFiles from './pages/MyFiles';
 import Folders from './pages/Folders';
 import Trash from './pages/Trash';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 // A small wrapper to connect the existing Auth component with our context
 function AuthHandler() {
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="folders/:folderId" element={<MyFiles />} />
         <Route path="trash" element={<Trash />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="settings" element={<Settings />} />
         {/* Redirect from base path to dashboard */}
         <Route index element={<Navigate to="/dashboard" replace />} />
       </Route>

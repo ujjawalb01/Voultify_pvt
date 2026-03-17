@@ -17,35 +17,33 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // We use the token from the state, which is the single source of truth.
       if (token) {
         try {
-          // IMPORTANT: Replace with your actual user profile endpoint
-          const response = await fetch('http://localhost:3000/api/user/profile',
-             {
+          const response = await fetch('http://localhost:3000/api/user/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
           });
 
-
           if (!response.ok) {
-            // This handles cases where the token is expired or invalid
             throw new Error('Failed to fetch user profile, token might be invalid.');
           }
           const userData = await response.json();
           setUser(userData);
         } catch (error) {
           console.error("Session error:", error.message);
-          logout(); // Log out the user if the token is bad
+          logout();
         }
       } else {
-        // If there's no token, ensure user is null.
         setUser(null);
       }
     };
 
     fetchUserProfile();
-    // FIX: Added 'token' to the dependency array.
-    // This makes the effect re-run whenever the token changes (e.g., after login).
+
+    // Listen for file changes across the app to update storage stats
+    const handleFileChange = () => fetchUserProfile();
+    window.addEventListener('fileChange', handleFileChange);
+
+    return () => window.removeEventListener('fileChange', handleFileChange);
   }, [token, logout]);
 
   const login_success = () => {
@@ -54,7 +52,23 @@ export function AuthProvider({ children }) {
     setToken(storedToken);
   }
 
-  const value = { user, token, isAuthenticated: !!token, logout, login_success };
+  const refreshUser = async () => {
+    if (token) {
+      try {
+        const response = await fetch('http://localhost:3000/api/user/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Failed to refresh user:", error);
+      }
+    }
+  };
+
+  const value = { user, token, isAuthenticated: !!token, logout, login_success, refreshUser };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

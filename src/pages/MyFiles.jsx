@@ -4,6 +4,7 @@ import FileCard from '../components/FileCard';
 import { useAuth } from '../context/AuthContext';
 import { Upload, FolderPlus, ArrowLeft, ChevronRight, Home } from 'lucide-react';
 import { UploadModal, NewFolderModal, MoveFileModal } from '../components/Modals';
+import FilePreviewModal from '../components/FilePreviewModal';
 
 export default function MyFiles() {
   const [view, setView] = useState('grid');
@@ -13,6 +14,9 @@ export default function MyFiles() {
   const [showFolderModal, setShowFolderModal] = useState(false);
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [fileToMove, setFileToMove] = useState(null);
+  const [filesToMove, setFilesToMove] = useState(null);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   
   const { token } = useAuth();
   const location = useLocation();
@@ -109,9 +113,49 @@ export default function MyFiles() {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      setSelectedFiles(prev => prev.filter(f => f.id !== id));
       fetchFiles(); 
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleToggleSelect = (file) => {
+    setSelectedFiles(prev => {
+        const isSelected = prev.some(f => f.id === file.id);
+        if (isSelected) {
+            return prev.filter(f => f.id !== file.id);
+        } else {
+            return [...prev, file];
+        }
+    });
+  };
+
+  const handleBulkDelete = async () => {
+   if (!window.confirm(`Move ${selectedFiles.length} item(s) to trash?`)) return;
+   try {
+       await fetch('http://localhost:3000/api/file/bulk/delete', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+           body: JSON.stringify({ fileIds: selectedFiles.map(f => f.id) })
+       });
+       setSelectedFiles([]);
+       fetchFiles();
+   } catch (error) {
+       console.error(error);
+   }
+  };
+
+  const handleBulkShare = () => {
+    const urls = selectedFiles
+        .filter(f => f.url)
+        .map(file => file.url.startsWith('http') ? file.url : `http://localhost:3000${file.url}`);
+    
+    if (urls.length > 0) {
+        navigator.clipboard.writeText(urls.join('\n'));
+        alert(`${urls.length} link(s) copied to clipboard!`);
+    } else {
+        alert('No shareable files selected.');
     }
   };
 
@@ -126,11 +170,7 @@ export default function MyFiles() {
   };
   
   const handleFolderClick = (folder) => {
-      // If we are in folders context, navigate to subfolder route?
-      // Or just push to stack?
-      // Since we implemented the stack logic which is consistent with /folders/:id,
-      // pushing to stack updates the view.
-      // However, if we want the URL to update for deep linking:
+      setSelectedFiles([]);
       if (isFoldersContext) {
            navigate(`/folders/${folder.id}`, { state: { folderName: folder.name } });
       } else {
@@ -139,10 +179,12 @@ export default function MyFiles() {
   };
   
   const navigateToBreadcrumb = (index) => {
+      setSelectedFiles([]);
       setFolderStack(folderStack.slice(0, index + 1));
   };
 
   const navigateRoot = () => {
+      setSelectedFiles([]);
       if (isFoldersContext) {
           navigate('/folders'); // Go back to folders list
       } else {
@@ -172,20 +214,23 @@ export default function MyFiles() {
   
   const initiateMove = (file) => {
       setFileToMove(file);
+      setFilesToMove(null);
       setShowMoveModal(true);
   };
   
-  const handleMoveFile = async (fileId, targetFolderId) => {
+  const handleMoveFile = async (activeFiles, targetFolderId) => {
+      const fileIds = activeFiles.map(f => f.id);
       try {
-          const response = await fetch(`http://localhost:3000/api/file/move/${fileId}`, {
-              method: 'PUT',
+          const response = await fetch(`http://localhost:3000/api/file/bulk/move`, {
+              method: 'POST',
               headers: { 
                   'Content-Type': 'application/json',
                   'Authorization': `Bearer ${token}` 
               },
-              body: JSON.stringify({ folderId: targetFolderId })
+              body: JSON.stringify({ fileIds, folderId: targetFolderId })
           });
           if(response.ok) {
+              setSelectedFiles([]);
               fetchFiles();
           } else {
               const err = await response.json();
@@ -200,7 +245,7 @@ export default function MyFiles() {
     <div className="h-full flex flex-col">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
-            <button onClick={navigateRoot} className={`flex items-center gap-1 hover:text-white transition ${folderStack.length === 0 ? 'text-white font-semibold' : 'text-zinc-400'}`}>
+            <button onClick={navigateRoot} className={`flex items-center gap-1 hover:text-zinc-900 dark:hover:text-white transition ${folderStack.length === 0 ? 'text-zinc-900 dark:text-white font-semibold' : 'text-zinc-500 dark:text-zinc-400'}`}>
                 {isFoldersContext ? <FolderPlus className="h-4 w-4" /> : <Home className="h-4 w-4" />}
                 <span>{isFoldersContext ? 'Folders' : 'My Files'}</span>
             </button>
@@ -209,7 +254,7 @@ export default function MyFiles() {
                     <ChevronRight className="h-4 w-4 text-zinc-600" />
                     <button 
                         onClick={() => navigateToBreadcrumb(index)}
-                        className={`whitespace-nowrap hover:text-white transition ${index === folderStack.length - 1 ? 'text-white font-semibold' : 'text-zinc-400'}`}
+                        className={`whitespace-nowrap hover:text-zinc-900 dark:hover:text-white transition ${index === folderStack.length - 1 ? 'text-zinc-900 dark:text-white font-semibold' : 'text-zinc-500 dark:text-zinc-400'}`}
                     >
                         {folder.name}
                     </button>
@@ -218,15 +263,7 @@ export default function MyFiles() {
         </div>
         
         <div className="flex items-center gap-3">
-             <button onClick={() => setShowFolderModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white transition">
-                <FolderPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">New Folder</span>
-            </button>
-            <button onClick={() => setShowUploadModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#6A11CB] to-[#2575FC] text-white transition hover:shadow-lg hover:shadow-blue-500/20">
-                <Upload className="h-4 w-4" />
-                <span className="hidden sm:inline">Upload</span>
-            </button>
-             <button onClick={() => setView(view === 'grid' ? 'list' : 'grid')} className="px-3 py-2 rounded-xl bg-white/5 text-zinc-300 hover:text-white">
+             <button onClick={() => setView(view === 'grid' ? 'list' : 'grid')} className="px-3 py-2 rounded-xl bg-white dark:bg-white/5 border border-zinc-200 dark:border-transparent text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white shadow-sm dark:shadow-none">
                 {view === 'grid' ? 'List' : 'Grid'}
             </button>
         </div>
@@ -235,14 +272,14 @@ export default function MyFiles() {
        {/* File List */}
       {files.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-zinc-500 min-h-[50vh]">
-              <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
-                  <FolderPlus className="h-8 w-8 opacity-50" />
+              <div className="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-white/5 flex items-center justify-center mb-4">
+                  <FolderPlus className="h-8 w-8 opacity-50 text-zinc-400 dark:text-white" />
               </div>
               <p>This folder is empty</p>
           </div>
       ) : (
           view === 'grid' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 sm:gap-6">
               {files.map((f) => (
                   <FileCard 
                     key={f.id} 
@@ -251,31 +288,48 @@ export default function MyFiles() {
                     onShare={handleShare} 
                     onFolderClick={handleFolderClick}
                     onMove={initiateMove}
+                    onPreview={setPreviewFile}
+                    selected={selectedFiles.some(sel => sel.id === f.id)}
+                    onToggleSelect={handleToggleSelect}
                   />
               ))}
             </div>
           ) : (
             <div className="space-y-2">
               {files.map((f) => (
-                <div key={f.id} className="flex items-center justify-between p-3 rounded-xl bg-[#0f0920] border border-white/5 group hover:bg-white/5 transition-colors">
+                <div key={f.id} className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-[#6A11CB] to-[#2575FC] dark:bg-[#0f0920] dark:bg-none border border-transparent dark:border-white/5 group hover:shadow-lg dark:hover:bg-white/5 transition-all shadow-sm dark:shadow-none">
                   <div 
                     className="flex items-center gap-3 flex-1 cursor-pointer"
-                    onClick={() => f.type === 'folder' ? handleFolderClick(f) : null}
+                    onClick={() => {
+                        if (f.type === 'folder') {
+                            handleFolderClick(f);
+                        } else {
+                            setPreviewFile(f);
+                        }
+                    }}
                   >
-                    <div className={`rounded-lg p-2 w-10 h-10 flex items-center justify-center ${f.type === 'folder' ? 'bg-blue-500/20 text-blue-400' : 'bg-violet-500/20 text-violet-400'}`}>
-                        <div className="text-sm font-bold uppercase">{f.type === 'folder' ? f.name.charAt(0) : 'Doc'}</div>
+                    <input 
+                       type="checkbox"
+                       checked={selectedFiles.some(sel => sel.id === f.id)}
+                       onChange={() => handleToggleSelect(f)}
+                       onClick={(e) => e.stopPropagation()}
+                       className="w-4 h-4 rounded border-white/20 bg-transparent text-violet-500 focus:ring-0 cursor-pointer accent-violet-500 hidden sm:block"
+                    />
+                    <div className={`rounded-lg p-2 w-10 h-10 flex items-center justify-center overflow-hidden flex-shrink-0 ${f.type === 'folder' ? 'bg-white/20 text-white dark:bg-blue-500/20 dark:text-blue-400' : 'bg-white/20 text-white dark:bg-violet-500/20 dark:text-violet-400'}`}>
+                        {f.type === 'folder' ? <div className="text-sm font-bold uppercase">{f.name.charAt(0)}</div> : 
+                         <div className="text-sm font-bold uppercase">Doc</div>}
                     </div>
                     <div>
                       <div className="font-medium text-white">{f.name}</div>
-                      <div className="text-xs text-zinc-500">{f.size}</div>
+                      <div className="text-xs text-white/70 dark:text-zinc-500">{f.size}</div>
                     </div>
                   </div>
                    <div className="flex items-center gap-4">
                       <div className="text-xs text-zinc-500 hidden sm:block">{f.modifiedAt}</div>
                       
                        {/* Context Actions for List View (Simplified) */}
-                      <button onClick={() => handleDelete(f.id)} className="text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-400/10 rounded-lg">Delete</button>
-                      <button onClick={() => initiateMove(f)} className="text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/10 rounded-lg">Move</button>
+                      <button onClick={() => handleDelete(f.id)} className="text-white hover:text-red-300 dark:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/10 dark:hover:bg-red-400/10 rounded-lg">Delete</button>
+                      <button onClick={() => initiateMove(f)} className="text-white hover:text-zinc-200 dark:text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-white/10 dark:hover:bg-white/10 rounded-lg">Move</button>
                    </div>
                 </div>
               ))}
@@ -297,12 +351,36 @@ export default function MyFiles() {
             currentFolderId={currentFolder?.id}
         />
       )}
-      {showMoveModal && fileToMove && (
+      {showMoveModal && (fileToMove || filesToMove) && (
         <MoveFileModal
             fileToMove={fileToMove}
-            onClose={() => { setShowMoveModal(false); setFileToMove(null); }}
+            filesToMove={filesToMove}
+            onClose={() => { setShowMoveModal(false); setFileToMove(null); setFilesToMove(null); }}
             onMove={handleMoveFile}
         />
+      )}
+      {previewFile && (
+        <FilePreviewModal
+            file={previewFile}
+            onClose={() => setPreviewFile(null)}
+        />
+      )}
+
+      {/* Floating Bulk Action Bar */}
+      {selectedFiles.length > 0 && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white dark:bg-[#1a1625] border border-zinc-200 dark:border-white/10 shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-4 z-50 animate-in slide-in-from-bottom-5">
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-200 whitespace-nowrap">
+                  {selectedFiles.length} selected
+              </span>
+              <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-700"></div>
+              <div className="flex items-center gap-1 sm:gap-2">
+                  <button onClick={() => setSelectedFiles(files)} className="text-sm px-2 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-300">Select All</button>
+                  <button onClick={() => setSelectedFiles([])} className="text-sm px-2 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-300">Clear</button>
+                  <button onClick={handleBulkShare} className="text-sm px-2 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 text-blue-600 dark:text-blue-400">Share</button>
+                  <button onClick={() => { setFileToMove(null); setFilesToMove(selectedFiles); setShowMoveModal(true); }} className="text-sm px-2 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-300">Move</button>
+                  <button onClick={handleBulkDelete} className="text-sm px-2 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-red-600 dark:text-red-400 font-medium">Delete</button>
+              </div>
+          </div>
       )}
     </div>
   );

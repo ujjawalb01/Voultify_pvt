@@ -2,8 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Basic page sizing */
-html, body, #root { height: 100%; }
+/* Basic page sizing and dynamic background theme */
+html, body, #root { 
+    height: 100%; 
+    @apply bg-zinc-50 text-zinc-900 transition-colors duration-200;
+}
+
+html.dark body {
+    @apply bg-[#0b0616] text-white;
+}
 
 /* subtle custom adjustments */
 .brand-gradient {

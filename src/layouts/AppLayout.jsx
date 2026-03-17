@@ -34,7 +34,7 @@ export default function AppLayout() {
 
   return (
     <>
-      <div className="flex min-h-screen bg-[#0b0616] text-white">
+      <div className="flex min-h-screen relative bg-zinc-50 dark:bg-[#0b0616] text-zinc-900 dark:text-white transition-colors duration-200">
         {/* Mobile Overlay */}
         {isSidebarOpen && (
           <div 

@@ -23,7 +23,11 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    // Add more fields as needed (e.g., avatar, storageLimit)
+    avatarUrl: {
+      type: String,
+      default: '',
+    },
+    // Add more fields as needed (e.g., storageLimit)
   },
   {
     timestamps: true,

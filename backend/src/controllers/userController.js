@@ -22,6 +22,7 @@ const authUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        avatarUrl: user.avatarUrl,
         token: generateToken(user._id),
       });
     } else {
@@ -60,6 +61,7 @@ const registerUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        avatarUrl: user.avatarUrl,
         token: generateToken(user._id),
       });
     } else {
@@ -78,10 +80,16 @@ const getUserProfile = async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
+    // Calculate total storage used
+    const files = await require('../models/File').find({ user: user._id });
+    const storageUsed = files.reduce((acc, file) => acc + (file.size || 0), 0);
+
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
+      avatarUrl: user.avatarUrl,
+      storageUsed,
     });
   } else {
     res.status(404);
@@ -89,8 +97,66 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// @desc    Update user profile
+// @route   PUT /api/user/profile
+// @access  Private
+const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.name = req.body.name || user.name;
+      
+      // If a new password is provided
+      if (req.body.password) {
+        // Ensure oldPassword is provided
+        if (!req.body.oldPassword) {
+            res.status(400);
+            throw new Error('Please enter your current password to change your password');
+        }
+
+        // Verify oldPassword
+        const isMatch = await user.matchPassword(req.body.oldPassword);
+        if (!isMatch) {
+            res.status(400);
+            throw new Error('Current password is incorrect');
+        }
+
+        // If matched, apply new password (pre-save middleware handles hashing)
+        user.password = req.body.password;
+      }
+
+      if (req.file) {
+        // Store the relative path to the uploaded avatar
+        user.avatarUrl = `/uploads/${req.file.filename}`;
+      }
+
+    const updatedUser = await user.save();
+    
+    // Calculate total storage used
+    const files = await require('../models/File').find({ user: updatedUser._id });
+    const storageUsed = files.reduce((acc, file) => acc + (file.size || 0), 0);
+
+      res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        avatarUrl: updatedUser.avatarUrl,
+        storageUsed,
+        token: generateToken(updatedUser._id),
+      });
+    } else {
+      res.status(404);
+      throw new Error('User not found');
+    }
+  } catch (error) {
+     res.status(400).json({ msg: error.message });
+  }
+};
+
 module.exports = {
   authUser,
   registerUser,
   getUserProfile,
+  updateUserProfile,
 };

@@ -53,7 +53,7 @@ export default function Topbar({ onUploadClick, onNewFolderClick, searchQuery, s
           <div className="flex items-center gap-2">
             <Link to="/profile" className="block hover:opacity-80 transition-opacity">
                 {user?.avatarUrl ? (
-                  <img src={`http://localhost:3000${user.avatarUrl}`} alt="Profile" className="h-9 w-9 rounded-xl object-cover border border-zinc-200 dark:border-white/10" />
+                  <img src={`https://voultback.onrender.com${user.avatarUrl}`} alt="Profile" className="h-9 w-9 rounded-xl object-cover border border-zinc-200 dark:border-white/10" />
                 ) : (
                   <div className="h-9 w-9 rounded-xl bg-zinc-100 dark:bg-white/5 flex items-center justify-center border border-zinc-200 dark:border-white/10">
                     <User className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />

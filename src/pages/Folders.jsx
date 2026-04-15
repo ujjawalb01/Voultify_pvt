@@ -34,7 +34,7 @@ export default function Folders() {
       // Given the previous "Sidebar" context, it was likely Root folders (+ maybe 1 level deep?).
       // Let's fetch Root folders first.
       
-      const response = await fetch('http://localhost:3000/api/file?folderId=', {
+      const response = await fetch('https://voultback.onrender.com/api/file?folderId=', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -69,7 +69,7 @@ export default function Folders() {
   
   const handleCreateFolder = async (name) => {
       try {
-        const response = await fetch('http://localhost:3000/api/file/folder', {
+        const response = await fetch('https://voultback.onrender.com/api/file/folder', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export default function Folders() {
   const handleDelete = async (id) => {
       if (!window.confirm('Move folder to trash?')) return;
       try {
-        await fetch(`http://localhost:3000/api/file/${id}`, {
+        await fetch(`https://voultback.onrender.com/api/file/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });

@@ -52,12 +52,12 @@ export default function Settings() {
                 </section>
                 
                 {/* Account Section (Placeholder for future) */}
-                <section>
+                {/* <section>
                     <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-wider">Account Settings</h3>
                     <div className="rounded-2xl p-4 bg-white dark:bg-[#0f0920] border border-zinc-200 dark:border-white/5 text-center text-sm text-zinc-500 dark:text-zinc-400">
                         Additional settings can be added here in the future
                     </div>
-                </section>
+                </section> */}
             </div>
         </div>
     );

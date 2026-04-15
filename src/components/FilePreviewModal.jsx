@@ -25,7 +25,7 @@ export default function FilePreviewModal({ file, onClose }) {
         setIsLoading(true);
         setError(null);
         try {
-            const rawUrl = file.url.startsWith('http') ? file.url : `http://localhost:3000${file.url}`;
+            const rawUrl = file.url.startsWith('http') ? file.url : `https://voultback.onrender.com${file.url}`;
             
             // Fetch the encrypted blob from the server
             const response = await fetch(rawUrl, {
@@ -60,7 +60,7 @@ export default function FilePreviewModal({ file, onClose }) {
 
   if (!file) return null;
 
-  const originalUrl = file.url?.startsWith('http') ? file.url : `http://localhost:3000${file.url}`;
+  const originalUrl = file.url?.startsWith('http') ? file.url : `https://voultback.onrender.com${file.url}`;
   
   const isImage = file.type?.includes('image');
   const isVideo = file.type?.includes('video');

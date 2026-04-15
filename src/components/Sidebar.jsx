@@ -63,7 +63,7 @@ export default function Sidebar({ isOpen, onClose }) {
         
         <div className="flex items-center gap-3 pt-3 border-t border-zinc-200 dark:border-white/10">
             {token && user?.avatarUrl ? (
-                <img src={`http://localhost:3000${user.avatarUrl}`} alt="Profile" className="h-8 w-8 rounded-full object-cover" />
+                <img src={`https://voultback.onrender.com${user.avatarUrl}`} alt="Profile" className="h-8 w-8 rounded-full object-cover" />
             ) : (
                 <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-white/10 flex items-center justify-center">
                     <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />

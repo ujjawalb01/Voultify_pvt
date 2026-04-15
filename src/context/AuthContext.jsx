@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
     const fetchUserProfile = async () => {
       if (token) {
         try {
-          const response = await fetch('http://localhost:3000/api/user/profile', {
+          const response = await fetch('https://voultback.onrender.com/api/user/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
           });
 
@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
   const refreshUser = async () => {
     if (token) {
       try {
-        const response = await fetch('http://localhost:3000/api/user/profile', {
+        const response = await fetch('https://voultback.onrender.com/api/user/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {

@@ -23,7 +23,7 @@ export default function Dashboard() {
     const fetchRecentFiles = async () => {
       try {
         if (!token) return;
-        const response = await fetch('http://localhost:3000/api/file', {
+        const response = await fetch('https://voultback.onrender.com/api/file', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -55,7 +55,7 @@ export default function Dashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm('Move file to trash?')) return;
     try {
-      await fetch(`http://localhost:3000/api/file/${id}`, {
+      await fetch(`https://voultback.onrender.com/api/file/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -68,7 +68,7 @@ export default function Dashboard() {
 
   const handleShare = (file) => {
     if (file.url) {
-        const fullUrl = file.url.startsWith('http') ? file.url : `http://localhost:3000${file.url}`;
+        const fullUrl = file.url.startsWith('http') ? file.url : `https://voultback.onrender.com${file.url}`;
         navigator.clipboard.writeText(fullUrl);
         alert('File link copied to clipboard!');
     } else {

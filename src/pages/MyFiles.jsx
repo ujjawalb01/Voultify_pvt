@@ -38,7 +38,7 @@ export default function MyFiles() {
 
   const fetchFiles = useCallback(async () => {
       try {
-        let url = `http://localhost:3000/api/file?`; 
+        let url = `https://voultback.onrender.com/api/file?`; 
         if (searchQuery) {
             url += `search=${encodeURIComponent(searchQuery)}`;
         } else if (currentFolder) {
@@ -109,7 +109,7 @@ export default function MyFiles() {
   const handleDelete = async (id) => {
     if (!window.confirm('Move file to trash?')) return;
     try {
-      await fetch(`http://localhost:3000/api/file/${id}`, {
+      await fetch(`https://voultback.onrender.com/api/file/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -134,7 +134,7 @@ export default function MyFiles() {
   const handleBulkDelete = async () => {
    if (!window.confirm(`Move ${selectedFiles.length} item(s) to trash?`)) return;
    try {
-       await fetch('http://localhost:3000/api/file/bulk/delete', {
+       await fetch('https://voultback.onrender.com/api/file/bulk/delete', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
            body: JSON.stringify({ fileIds: selectedFiles.map(f => f.id) })
@@ -149,7 +149,7 @@ export default function MyFiles() {
   const handleBulkShare = () => {
     const urls = selectedFiles
         .filter(f => f.url)
-        .map(file => file.url.startsWith('http') ? file.url : `http://localhost:3000${file.url}`);
+        .map(file => file.url.startsWith('http') ? file.url : `https://voultback.onrender.com${file.url}`);
     
     if (urls.length > 0) {
         navigator.clipboard.writeText(urls.join('\n'));
@@ -161,7 +161,7 @@ export default function MyFiles() {
 
   const handleShare = (file) => {
     if (file.url) {
-        const fullUrl = file.url.startsWith('http') ? file.url : `http://localhost:3000${file.url}`;
+        const fullUrl = file.url.startsWith('http') ? file.url : `https://voultback.onrender.com${file.url}`;
         navigator.clipboard.writeText(fullUrl);
         alert('File link copied to clipboard!');
     } else {
@@ -195,7 +195,7 @@ export default function MyFiles() {
 
   const handleCreateFolder = async (name) => {
       try {
-        const response = await fetch('http://localhost:3000/api/file/folder', {
+        const response = await fetch('https://voultback.onrender.com/api/file/folder', {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -221,7 +221,7 @@ export default function MyFiles() {
   const handleMoveFile = async (activeFiles, targetFolderId) => {
       const fileIds = activeFiles.map(f => f.id);
       try {
-          const response = await fetch(`http://localhost:3000/api/file/bulk/move`, {
+          const response = await fetch(`https://voultback.onrender.com/api/file/bulk/move`, {
               method: 'POST',
               headers: { 
                   'Content-Type': 'application/json',

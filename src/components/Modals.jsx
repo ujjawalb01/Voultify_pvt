@@ -54,7 +54,7 @@ export function UploadModal({ onClose, currentFolderId }) {
         formData.append('file', file); // 'files' should match your backend's expected field name
       });
       // IMPORTANT: Replace with your actual file upload endpoint
-      const response = await fetch('http://localhost:3000/api/file/upload', {
+      const response = await fetch('https://voultback.onrender.com/api/file/upload', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
@@ -146,7 +146,7 @@ export function MoveFileModal({ onClose, fileToMove, filesToMove, onMove }) {
   useEffect(() => {
     const fetchFolders = async () => {
        try {
-         const response = await fetch('http://localhost:3000/api/file?folderId=', { 
+         const response = await fetch('https://voultback.onrender.com/api/file?folderId=', { 
             headers: { 'Authorization': `Bearer ${token}` }
          });
          const data = await response.json();
@@ -168,7 +168,7 @@ export function MoveFileModal({ onClose, fileToMove, filesToMove, onMove }) {
   const handleCreateAndMove = async () => {
       if (!newFolderName.trim()) return;
       try {
-          const response = await fetch('http://localhost:3000/api/file/folder', {
+          const response = await fetch('https://voultback.onrender.com/api/file/folder', {
               method: 'POST',
               headers: { 
                   'Content-Type': 'application/json',

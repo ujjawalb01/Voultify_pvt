@@ -10,7 +10,7 @@ export default function Profile() {
   
   // Details State
   const [name, setName] = useState(user?.name || '');
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatarUrl ? `http://localhost:3000${user.avatarUrl}` : null);
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatarUrl ? `https://voultback.onrender.com${user.avatarUrl}` : null);
   const [selectedFile, setSelectedFile] = useState(null);
   
   // Security State
@@ -51,7 +51,7 @@ export default function Profile() {
     if (selectedFile) formData.append('avatar', selectedFile);
 
     try {
-      const response = await fetch('http://localhost:3000/api/user/profile', {
+      const response = await fetch('https://voultback.onrender.com/api/user/profile', {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
@@ -93,7 +93,7 @@ export default function Profile() {
     formData.append('password', newPassword);
 
     try {
-      const response = await fetch('http://localhost:3000/api/user/profile', {
+      const response = await fetch('https://voultback.onrender.com/api/user/profile', {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
@@ -161,7 +161,7 @@ export default function Profile() {
                        <div className="flex flex-col sm:flex-row items-center gap-6">
                           <div className="relative h-24 w-24 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 flex items-center justify-center overflow-hidden shrink-0">
                               {user.avatarUrl ? (
-                                  <img src={`http://localhost:3000${user.avatarUrl}`} alt="Profile" className="h-full w-full object-cover" />
+                                  <img src={`https://voultback.onrender.com${user.avatarUrl}`} alt="Profile" className="h-full w-full object-cover" />
                               ) : (
                                   <User className="h-10 w-10 text-zinc-400 dark:text-zinc-600" />
                               )}
@@ -253,7 +253,7 @@ export default function Profile() {
                         onClick={() => {
                             setIsEditing(false);
                             setName(user.name); // Reset state
-                            setAvatarPreview(user.avatarUrl ? `http://localhost:3000${user.avatarUrl}` : null);
+                            setAvatarPreview(user.avatarUrl ? `https://voultback.onrender.com${user.avatarUrl}` : null);
                             setSelectedFile(null);
                         }}
                         className="px-6 py-2.5 rounded-xl bg-transparent hover:bg-zinc-100 dark:hover:bg-white/5 text-zinc-700 dark:text-zinc-300 text-sm font-medium transition-colors"

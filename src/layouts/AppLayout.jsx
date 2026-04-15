@@ -13,7 +13,7 @@ export default function AppLayout() {
 
   const handleCreateFolder = async (folderName) => {
     try {
-      const response = await fetch('http://localhost:3000/api/file/folder', {
+      const response = await fetch('https://voultback.onrender.com/api/file/folder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

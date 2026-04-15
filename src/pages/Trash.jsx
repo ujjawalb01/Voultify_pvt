@@ -12,7 +12,7 @@ export default function Trash() {
   const fetchTrash = useCallback(async () => {
     try {
       if(!token) return;
-      const response = await fetch('http://localhost:3000/api/file/trash', {
+      const response = await fetch('https://voultback.onrender.com/api/file/trash', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -38,7 +38,7 @@ export default function Trash() {
 
   const handleRestore = async (id) => {
     try {
-      await fetch(`http://localhost:3000/api/file/restore/${id}`, {
+      await fetch(`https://voultback.onrender.com/api/file/restore/${id}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -62,7 +62,7 @@ export default function Trash() {
 
   const handleBulkRestore = async () => {
    try {
-       await fetch('http://localhost:3000/api/file/bulk/restore', {
+       await fetch('https://voultback.onrender.com/api/file/bulk/restore', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
            body: JSON.stringify({ fileIds: selectedFiles.map(f => f.id) })
@@ -77,7 +77,7 @@ export default function Trash() {
   const handleBulkPermanentDelete = async () => {
    if (!window.confirm(`Permanently delete ${selectedFiles.length} item(s)? This cannot be undone.`)) return;
    try {
-       await fetch('http://localhost:3000/api/file/bulk/permanent', {
+       await fetch('https://voultback.onrender.com/api/file/bulk/permanent', {
            method: 'POST',
            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
            body: JSON.stringify({ fileIds: selectedFiles.map(f => f.id) })
@@ -92,7 +92,7 @@ export default function Trash() {
   const handlePermanentDelete = async (id) => {
     if (!window.confirm('Delete this file forever? This cannot be undone.')) return;
     try {
-      await fetch(`http://localhost:3000/api/file/permanent/${id}`, {
+      await fetch(`https://voultback.onrender.com/api/file/permanent/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

@@ -13,7 +13,7 @@ export default function FileCard({ file, onDelete, onRestore, isTrash, onShare, 
 
   const isImage = file.type?.includes('image');
   const isVideo = file.type?.includes('video');
-  const originalUrl = file.url?.startsWith('http') ? file.url : `http://localhost:3000${file.url}`;
+  const originalUrl = file.url?.startsWith('http') ? file.url : `https://voultback.onrender.com${file.url}`;
 
   // Decrypt the cover photo (image/video) on mount
   useEffect(() => {

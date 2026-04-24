@@ -6,6 +6,9 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token'));
+  // isLoading is true during the initial verification of a stored token.
+  // This prevents showing a previous user's data before the server confirms identity.
+  const [isLoading, setIsLoading] = useState(() => !!localStorage.getItem('token'));
   const navigate = useNavigate();
 
   const logout = useCallback(() => {
@@ -31,9 +34,13 @@ export function AuthProvider({ children }) {
         } catch (error) {
           console.error("Session error:", error.message);
           logout();
+        } finally {
+          // Always mark loading as done once the check is complete.
+          setIsLoading(false);
         }
       } else {
         setUser(null);
+        setIsLoading(false);
       }
     };
 
@@ -48,6 +55,8 @@ export function AuthProvider({ children }) {
 
   const login_success = () => {
     const storedToken = localStorage.getItem('token');
+    // Mark as loading while we verify the new user's token.
+    setIsLoading(true);
     // This will trigger the useEffect hook to run again and fetch the user profile.
     setToken(storedToken);
   }
@@ -68,7 +77,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const value = { user, token, isAuthenticated: !!token, logout, login_success, refreshUser };
+  const value = { user, token, isAuthenticated: !!token, isLoading, logout, login_success, refreshUser };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

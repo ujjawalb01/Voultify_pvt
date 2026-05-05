@@ -55,11 +55,11 @@ export default function Sidebar({ isOpen, onClose }) {
       </nav>
 
       <div className="mt-auto p-3 rounded-xl bg-zinc-100 dark:bg-white/5">
-        <div className="text-xs text-zinc-500 dark:opacity-80">Storage</div>
+        {/* <div className="text-xs text-zinc-500 dark:opacity-80">Storage</div>
         <div className="mt-2 text-sm font-medium">2.5 GB of 15 GB</div>
         <div className="mt-2 h-2 w-full rounded-full bg-zinc-200 dark:bg-white/10 mb-4">
           <div className="h-2 rounded-full" style={{ width: '17%', backgroundImage: 'linear-gradient(90deg,#6A11CB,#2575FC)'}} />
-        </div>
+        </div> */}
         
         <div className="flex items-center gap-3 pt-3 border-t border-zinc-200 dark:border-white/10">
             {token && user?.avatarUrl ? (
